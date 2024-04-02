@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 public class Stage {
   private int quantity;
+  Calculation cal = new Calculation();
 
   public void start() {
     Scanner sc = new Scanner(System.in);
@@ -9,5 +10,7 @@ public class Stage {
     quantity = sc.nextInt();
 
     // code here
+    cal.userPrice(quantity);
+
   }
 }
