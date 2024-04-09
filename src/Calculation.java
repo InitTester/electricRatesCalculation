@@ -1,77 +1,120 @@
+import java.security.PublicKey;
 import java.text.DecimalFormat;
 
 public class Calculation {
+    // 6개의 요금을 구하는 메서드
+    // 싱글톤 패턴
+    private static Calculation instance;
 
-  // code here
-    public void userPrice(int usekWh){
+    private double 사용량;
+    private int 기본요금;
+    private double 전력량요금;
+    private double 기후환경요금;
+    private double 전기요금계;
+    private double 부가가치세;
+    private double 전력기반기금;
 
-        // 기본요금
-        System.out.printf("기본요금 : %,d원 \n",기본요금(usekWh));
+    private Calculation(){}
 
-        // 전력량 요금
-        System.out.printf("전력량요금 : %,d원 \n",(int)전력량요금(usekWh));
-
-        // 기후환경 요금
-        System.out.printf("기후환경요금 : %,d원 \n",(int)기후환경요금(usekWh));
-
-        // 전기요금계
-        System.out.printf("전기요금계 : %,d원 \n",(int)전기요금계(usekWh));
-
-        // 부가가치세
-        System.out.printf("부가가치세 : %,d원 \n",(int) Math.round(부가가치세(usekWh)),2);
-
-        // 전력 기반기금
-        System.out.printf("전력기반기금 : %,d원 \n",(int)전력기반기금(usekWh));
-
-        // 청구금액
-        System.out.printf("청구금액 : %,d원 \n",(int)청구금액(usekWh));
+    public static Calculation getInstance() {
+        if(instance == null){
+            synchronized (Calculation.class){
+                if(instance == null){
+                    instance = new Calculation();
+                }
+            }
+        }
+        return instance;
     }
 
-    static int 기본요금(int usekWh){
+    public double get사용량() {
+        return 사용량;
+    }
 
-        int 기본요금 = 0;
+    public void set사용량(double 사용량) {
+        this.사용량 = 사용량;
 
-        if(usekWh <=200) {기본요금 = 910;}
-        else if(201<= usekWh && usekWh <= 400 ) { 기본요금=1600;}
-        else if(usekWh > 400) { 기본요금 = 7300;}
+        set기본요금();
+        set전력량요금();
+        set기후환경요금();
+        set전기요금계();
+        set부가가치세();
+        set전력기반기금();
+    }
 
+    public int get기본요금() {
         return 기본요금;
     }
 
-    static double 전력량요금(int usekWh){
+    public void set기본요금() {
+        if(사용량 <=200) {기본요금 = 910;}
+        else if(201<= 사용량 && 사용량 <= 400 ) { 기본요금=1600;}
+        else if(사용량 > 400) { 기본요금 = 7300;}
+    }
 
-        double 전력량요금 = 0;
-
-        if(0 <= usekWh-200){
-            전력량요금 += 200 * 120;
-        }
-        if(0 <= usekWh-400){
-            전력량요금 += 200 * 214.6;
-        }
-        if (0 < usekWh-400){
-            전력량요금 += (usekWh-400) * 307.3;
-        }
+    public double get전력량요금() {
         return 전력량요금;
     }
 
-    static double 기후환경요금(int usekWh){
-        return usekWh * 9;
+    public void set전력량요금() {
+        if(0 <= 사용량-200){
+            전력량요금 += 200 * 120;
+        }
+        if(0 <= 사용량-400){
+            전력량요금 += 200 * 214.6;
+        }
+        if (0 < 사용량-400){
+            전력량요금 += (사용량-400) * 307.3;
+        }
     }
 
-    static double 전기요금계(int usekWh){
-       return (int)(기본요금(usekWh) + 전력량요금(usekWh) +  기후환경요금(usekWh));
+    public double get기후환경요금() {
+        return 기후환경요금;
     }
 
-    static double 부가가치세 (int usekWh){
-        return 전기요금계(usekWh) * 0.1;
+    public void set기후환경요금() {
+        기후환경요금 = 사용량 *9;
     }
 
-    static double 전력기반기금 (int usekWh){
-        return (int)(전기요금계(usekWh)*0.037/10) * 10;
+    public double get전기요금계() {
+        return 전기요금계;
     }
 
-    static double 청구금액(int usekWh){
-        return (int)(전기요금계(usekWh) + 부가가치세(usekWh) + 전력기반기금(usekWh))/10 * 10;
+    public void set전기요금계() {
+        전기요금계 = (int)(get기본요금() + get전력량요금() +  get기후환경요금());
     }
 
+    public double get부가가치세() {
+        return 부가가치세;
+    }
+
+    public void set부가가치세() {
+        부가가치세 = get전기요금계() * 0.1;
+    }
+
+    public double get전력기반기금() {
+        return 전력기반기금;
+    }
+
+    public void set전력기반기금() {
+        전력기반기금 = (int)(get전기요금계()*0.037/10) * 10;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("기본요금 : %,d원 \n" +
+                "전력량요금 : %,d원 \n" +
+                "기후환경요금 : %,d원 \n" +
+                "전기요금계 : %,d원 \n" +
+                "부가가치세 : %,d원 (원미만 반올림) \n" +
+                "전력기반기금 : %,d원 (10원미만절사) \n" +
+                "청구금액 : %,d원 (10원미만절사) \n",
+                기본요금,
+                (int)전력량요금,
+                (int)기후환경요금,
+                (int)전기요금계,
+                (int)Math.round(부가가치세),
+                (int)전력기반기금,
+                (int)(전기요금계 + 부가가치세 + 전력기반기금)/10 * 10) ;
+    }
 }
